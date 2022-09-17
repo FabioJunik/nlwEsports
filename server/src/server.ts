@@ -1,22 +1,34 @@
 import express from "express";
-
+import { PrismaClient } from "@prisma/client"
 
 const app = express();
+const prisma = new PrismaClient();
 
-app.get('/users',(request, response)=>{
-    return response.json([
-        {
-            id: 1,
-            name: "Fábio Junik",
-            age: 19
-        },
-        {
-            id: 2,
-            name: "António Muteka",
-            age: 18
-        },
-    ])
+app.get('/games', async (request, response) => {
+
+    const games = await prisma.game.findMany({
+        include: {
+            _count: {
+                select: {
+                    ads: true
+                }
+            }
+        }
+    });
+
+    return response.json(games)
 })
 
+app.post('/ads', (request, response) => {
+    return response.status(201).json([]);
+})
 
-app.listen(5000,()=>console.log("Server is runnig in port 5000"));
+app.get('/games/:id/ads', (request, response) => {
+    return response.json([])
+})
+
+app.get('/ads/:id/discover', (request, response) => {
+    return response.json([])
+})
+
+app.listen(5000, () => console.log("Server is runnig in port 5000"));
