@@ -1,7 +1,10 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client"
+import { convetHourStringToMinute } from "./utils/convetHourStringToMinute";
 
 const app = express();
+app.use(express.json());
+
 const prisma = new PrismaClient();
 
 app.get('/games', async (request, response) => {
@@ -63,6 +66,34 @@ app.get('/ads/:id/discord', async (request, response) => {
     })
 
     return response.json(ad)
+})
+
+app.post('/games/:id/ads', async (request, response) => {
+    const gameId = request.params.id;
+    const {
+        name,
+        yearsPlaying,
+        discord,
+        weekDays,
+        hourStart,
+        hourEnd,
+        useVoiceChannel,
+    } = request.body;
+
+    const ad = await prisma.ad.create({
+        data: {
+            gameId,
+            name,
+            yearsPlaying,
+            discord,
+            weekDays: weekDays.join(','),
+            hourStart: convetHourStringToMinute(hourStart),
+            hourEnd: convetHourStringToMinute(hourEnd),
+            useVoiceChannel
+        }
+    })
+
+    return response.status(201).json(ad);
 })
 
 app.listen(5000, () => console.log("Server is runnig in port 5000"));
