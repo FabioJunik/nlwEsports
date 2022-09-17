@@ -49,8 +49,20 @@ app.get('/games/:id/ads', async (request, response) => {
     }))
 })
 
-app.get('/ads/:id/discover', (request, response) => {
-    return response.json([])
+app.get('/ads/:id/discord', async (request, response) => {
+
+    const adId = request.params.id;
+
+    const ad = await prisma.ad.findUniqueOrThrow({
+        select: {
+            discord: true
+        },
+        where: {
+            id: adId
+        }
+    })
+
+    return response.json(ad)
 })
 
 app.listen(5000, () => console.log("Server is runnig in port 5000"));
