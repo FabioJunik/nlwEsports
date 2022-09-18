@@ -7,6 +7,7 @@ import { CreateAdModal } from './components/CreateAdModal';
 
 import logo from './assets/logo.svg';
 import './styles/main.css';
+import axios from 'axios';
 
 
 interface GameProps {
@@ -22,11 +23,9 @@ function App() {
   const [games, setGames] = useState<GameProps[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/games")
-      .then(response => response.json())
-      .then(data => {
-        setGames(data)
-        console.log(data);
+    axios("http://localhost:5000/games")
+      .then(response => {
+        setGames(response.data)
       })
   }, [])
   return (
